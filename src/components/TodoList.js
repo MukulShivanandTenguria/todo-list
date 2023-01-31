@@ -13,13 +13,13 @@ const TodoList = () => {
     }, []);
     const [todotask, setTodoTask] = useState("");
     const [todolist, setTodoList] = useState([]);
-    const [showdata, setShowData] = useState("Show");
+    const [showdata, setShowData] = useState(true);
   
     const addTodoData = (e) => {
       e.preventDefault();
       let newtask={ id: uuidv4(), data: todotask, completed: false }
       let updatedlist=[...todolist, newtask]
-      setTodoList((prev) => [...prev, updatedlist]);
+      setTodoList(updatedlist);
         setTodoTask("");
       localStorage.setItem("listData", JSON.stringify(updatedlist));
     };
@@ -32,8 +32,12 @@ const TodoList = () => {
       localStorage.setItem("listData", JSON.stringify(todolist));
     };
   
-    const handleOnToggle = (e) => {
-      setShowData(e.target.value === "Show" ? "Hide" : "Show");
+    const handleOnToggle = () => {
+      if(showdata===true){
+        setShowData(false);
+      }else{
+        setShowData(true);
+      }
     };
   
     const handleOnInputChange = (e) => {
@@ -87,10 +91,10 @@ const TodoList = () => {
           color="primary"
           variant="contained"
           size="small"
-          value={showdata}
+          value={showdata?"Show":"Hide"}
           onClick={handleOnToggle}
         >
-          {showdata}
+          {showdata?"Show":"Hide"}
         </Button>
       </div>
       <div className="flex justify-center">
@@ -101,7 +105,7 @@ const TodoList = () => {
                 <li
                   id={value.id}
                   key={value.id}
-                  style={value.completed&&showdata==="Hide"?{ display:"none" }:{display:"block"}}
+                  style={value.completed&&!showdata?{ display:"none" }:{display:"block"}}
                 >
                   <div className="py-2 px-2 flex ">
                     <label className="flex w-full cursor-pointer">
