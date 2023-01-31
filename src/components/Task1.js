@@ -5,37 +5,24 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { v4 as uuidv4 } from "uuid";
 const Task1 = () => {
   useEffect(() => {
-    const storageData=localStorage.getItem("listData")
-    if(storageData){
+    const storageData = localStorage.getItem("listData");
+    if (storageData) {
       setList([...JSON.parse(localStorage.getItem("listData"))]);
     }
   }, []);
   const [task, setTask] = useState("");
   const [list, setList] = useState([]);
-  const [displayval, setDisplayVal] = useState("block");
-  const [name, setName] = useState("Show");
-  const [state, setState] = useState();
+  const [showdata, setShowData] = useState("Show");
 
   const addTodoData = (e) => {
     e.preventDefault();
-    let data={ id: uuidv4(), data: task, state: false }
-    let listdata=[...list,data]
-    if(list===[]){
-      setList(data);
-    }else{
-      setList(listdata);
-    }
-    // if(list===[]){
-    //   setList(data);
-    // }else{
-    //   setList((prev) => [...prev, data]);
-    // }
-      setTask("");
-      let data2=list
-    localStorage.setItem("listData", JSON.stringify(data2));
+    let newtask = { id: uuidv4(), data: task, completed: false };
+
+    setList((prev) => [...prev, newtask]);
+    setTask("");
+    localStorage.setItem("listData", JSON.stringify(list));
   };
-  
-  const deleteItem = (e) => {
+  const handleOnDeleteItem = (e) => {
     const { value } = e.target;
     const newlist = list.filter((value1) => {
       return value1.id !== value;
@@ -44,23 +31,19 @@ const Task1 = () => {
     localStorage.setItem("listData", JSON.stringify(list));
   };
 
-  const toggle = (e) => {
-    setName(e.target.value === "Show" ? "Hide" : "Show");
-    setDisplayVal("block");
+  const handleOnToggle = (e) => {
+    setShowData(e.target.value === "Show" ? "Hide" : "Show");
   };
 
-  const inputOnChange = (e) => {
-    let a=list;
-    for (let i = 0; i < list.length; i++) {
-      if(list[i].id===e.target.value){
-        if(list[i].state===true){
-          a[i].state=false;
-        }else{
-          a[i].state=true;
-        }
-      }
+  const handleOnInputChange = (e) => {
+    let listdata = list;
+    let { value } = e.target;
+    if (listdata[value].completed === true) {
+      listdata[value].completed = false;
+    } else {
+      listdata[value].completed = true;
     }
-    setList([...a])
+    setList([...listdata]);
   };
   console.log(list);
   return (
@@ -103,10 +86,10 @@ const Task1 = () => {
           color="primary"
           variant="contained"
           size="small"
-          value={name}
-          onClick={toggle}
+          value={showdata}
+          onClick={handleOnToggle}
         >
-          {name}
+          {showdata}
         </Button>
       </div>
       <div className="flex justify-center">
@@ -116,21 +99,25 @@ const Task1 = () => {
               return (
                 <li
                   id={value.id}
-                  key={index}
-                  style={value.state&&name==="Hide"?{ display:"none" }:{display:"block"}}
+                  key={value.id}
+                  style={
+                    value.completed && showdata === "Hide"
+                      ? { display: "none" }
+                      : { display: "block" }
+                  }
                 >
                   <div className="py-2 px-2 flex ">
                     <label className="flex w-full cursor-pointer">
                       <input
                         type="checkbox"
                         id={value.id}
-                        value={value.id}
-                        onClick={inputOnChange}
-                        checked={list[index].state}
+                        value={index}
+                        onClick={handleOnInputChange}
+                        checked={list[index].completed}
                       />
                       <p className="pl-2 py-2 w-[93%]">{value.data}</p>
                       <div>
-                        <Button value={value.id} onClick={deleteItem}>
+                        <Button value={value.id} onClick={handleOnDeleteItem}>
                           <ClearIcon color="error" />
                           Delete
                         </Button>
