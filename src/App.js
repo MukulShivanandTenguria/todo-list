@@ -1,10 +1,10 @@
 import './App.css';
-import Task1 from './components/Task1';
+import TodoList from './components/TodoList';
 
 function App() {
   return (
     <div>
-      <Task1/>
+      <TodoList/>
     </div>
   );
 }
