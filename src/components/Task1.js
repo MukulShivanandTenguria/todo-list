@@ -2,32 +2,46 @@ import React, { useEffect, useState } from "react";
 import CreateSharpIcon from "@mui/icons-material/CreateSharp";
 import { Button, TextField } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-
+import { v4 as uuidv4 } from "uuid";
 const Task1 = () => {
   useEffect(() => {
-    setList([...JSON.parse(localStorage.getItem("listData"))]);
+    const storageData=localStorage.getItem("listData")
+    if(storageData){
+      setList([...JSON.parse(localStorage.getItem("listData"))]);
+    }
   }, []);
   const [task, setTask] = useState("");
   const [list, setList] = useState([]);
   const [displayval, setDisplayVal] = useState("block");
   const [name, setName] = useState("Show");
-  const [inputdata, setInputData] = useState([]);
+  const [state, setState] = useState();
 
-  const addTodoData = () => {
-    if (task !== "") {
-      setList((prev) => [...prev, task]);
+  const addTodoData = (e) => {
+    e.preventDefault();
+    let data={ id: uuidv4(), data: task, state: false }
+    let listdata=[...list,data]
+    if(list===[]){
+      setList(data);
+    }else{
+      setList(listdata);
     }
-    let data = list;
-    setTask("");
-    localStorage.setItem("listData", JSON.stringify(list));
+    // if(list===[]){
+    //   setList(data);
+    // }else{
+    //   setList((prev) => [...prev, data]);
+    // }
+      setTask("");
+      let data2=list
+    localStorage.setItem("listData", JSON.stringify(data2));
   };
-
+  
   const deleteItem = (e) => {
-    const value1 = list[e.target.value];
-    const newlist = list.filter((value) => {
-      return value1 !== value;
+    const { value } = e.target;
+    const newlist = list.filter((value1) => {
+      return value1.id !== value;
     });
     setList(newlist);
+    localStorage.setItem("listData", JSON.stringify(list));
   };
 
   const toggle = (e) => {
@@ -35,17 +49,20 @@ const Task1 = () => {
     setDisplayVal("block");
   };
 
-  const inputCheck = (e) => {
-    // const a = inputdata.splice(e.target.value, 0, e.target.checked);
-    // setInputData(a);
-    // console.log(inputdata);
-    // if(!e.target.checked){
-    //   setDisplayVal("block")
-    // }else{
-    //   setDisplayVal("none")
-    // }
+  const inputOnChange = (e) => {
+    let a=list;
+    for (let i = 0; i < list.length; i++) {
+      if(list[i].id===e.target.value){
+        if(list[i].state===true){
+          a[i].state=false;
+        }else{
+          a[i].state=true;
+        }
+      }
+    }
+    setList([...a])
   };
-  console.log(inputdata);
+  console.log(list);
   return (
     <>
       <nav className="bg-gray-800 text-white py-4 px-5 text-3xl flex justify-between">
@@ -59,20 +76,27 @@ const Task1 = () => {
           </button>
         </div>
       </nav>
-      <div className="textarea my-3 mx-2 flex">
-        <div className="mr-2 w-[90%]">
-          <TextField
-            placeholder="Type to add a new task"
-            size="small"
-            fullWidth
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-          />
+      <form onSubmit={addTodoData}>
+        <div className="textarea my-3 mx-2 flex">
+          <div className="mr-2 w-[90%]">
+            <TextField
+              placeholder="Type to add a new task"
+              size="small"
+              fullWidth
+              value={task}
+              onChange={(e) => setTask(e.target.value)}
+            />
+          </div>
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            disabled={task === "" ? true : false}
+          >
+            Add Task
+          </Button>
         </div>
-        <Button color="primary" variant="contained" onClick={addTodoData}>
-          Add Task
-        </Button>
-      </div>
+      </form>
       <div className="flex justify-between bg-gray-100 py-2 pl-2 pr-7">
         <p className="">Show / Hide Completed Tasks:</p>
         <Button
@@ -87,27 +111,35 @@ const Task1 = () => {
       </div>
       <div className="flex justify-center">
         <ul className="divide-y w-[98%]">
-          {list.map((value, index) => {
-            return (
-              <li id={index} key={index} style={{ display: `${displayval}` }}>
-                <div className="py-2 px-2 flex ">
-                  <input
-                    type="checkbox"
-                    id={index}
-                    value={index}
-                    onClick={inputCheck}
-                  />
-                  <p className="pl-2 py-2 w-[93%]">{value}</p>
-                  <div>
-                    <Button value={index} onClick={deleteItem}>
-                      <ClearIcon color="error" />
-                      Delete
-                    </Button>
+          {list &&
+            list.map((value, index) => {
+              return (
+                <li
+                  id={value.id}
+                  key={index}
+                  style={value.state&&name==="Hide"?{ display:"none" }:{display:"block"}}
+                >
+                  <div className="py-2 px-2 flex ">
+                    <label className="flex w-full cursor-pointer">
+                      <input
+                        type="checkbox"
+                        id={value.id}
+                        value={value.id}
+                        onClick={inputOnChange}
+                        checked={list[index].state}
+                      />
+                      <p className="pl-2 py-2 w-[93%]">{value.data}</p>
+                      <div>
+                        <Button value={value.id} onClick={deleteItem}>
+                          <ClearIcon color="error" />
+                          Delete
+                        </Button>
+                      </div>
+                    </label>
                   </div>
-                </div>
-              </li>
-            );
-          })}
+                </li>
+              );
+            })}
         </ul>
       </div>
     </>
