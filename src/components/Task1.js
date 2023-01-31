@@ -1,36 +1,32 @@
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import CreateSharpIcon from "@mui/icons-material/CreateSharp";
 import { Button, TextField } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 
 const Task1 = () => {
-  useEffect(()=>{
-    setList([...JSON.parse(localStorage.getItem("listData"))])
-  },[])
+  useEffect(() => {
+    setList([...JSON.parse(localStorage.getItem("listData"))]);
+  }, []);
   const [task, setTask] = useState("");
   const [list, setList] = useState([]);
   const [displayval, setDisplayVal] = useState("block");
-  const [name, setName] = useState("Show");                                  
+  const [name, setName] = useState("Show");
   const [inputdata, setInputData] = useState([]);
-  // const [bol,setbool]=useState("false")
+
   const addTodoData = () => {
     if (task !== "") {
       setList((prev) => [...prev, task]);
     }
-    let data=list
-    setTask(""); 
+    let data = list;
+    setTask("");
     localStorage.setItem("listData", JSON.stringify(list));
-    setInputData((prev)=>[...prev,false])
   };
-
 
   const deleteItem = (e) => {
     const value1 = list[e.target.value];
     const newlist = list.filter((value) => {
       return value1 !== value;
     });
-    let arr=inputdata.splice(e.target.value,1)
-    setInputData(arr)
     setList(newlist);
   };
 
@@ -95,8 +91,13 @@ const Task1 = () => {
             return (
               <li id={index} key={index} style={{ display: `${displayval}` }}>
                 <div className="py-2 px-2 flex ">
-                  <input type="checkbox" id={index} value={index} onClick={inputCheck}  />
-                  <p className="pl-2 py-2 w-[92.5%]">{value}</p>
+                  <input
+                    type="checkbox"
+                    id={index}
+                    value={index}
+                    onClick={inputCheck}
+                  />
+                  <p className="pl-2 py-2 w-[93%]">{value}</p>
                   <div>
                     <Button value={index} onClick={deleteItem}>
                       <ClearIcon color="error" />
