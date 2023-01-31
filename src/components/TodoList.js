@@ -117,7 +117,7 @@ const TodoList = () => {
             })}
 
 
-          {(!todolist || todolist.length === 0) && <div className="p-4 text-center bg-gray-50">No task found.</divg>}
+          {(!todolist || todolist.length === 0) && <div className="p-4 text-center bg-gray-50">No task found.</div>}
         </ul>
       </div>
     </>
